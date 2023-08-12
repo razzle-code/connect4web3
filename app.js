@@ -3,6 +3,12 @@ const web3 = new Web3(window.ethereum);
 let accounts = [];
 let contract;
 
+const Player = {
+    NONE: 0,
+    PLAYER1: 1,
+    PLAYER2: 2
+};
+
 async function init() {
     // Request account access if needed (for MetaMask)
     await window.ethereum.enable();

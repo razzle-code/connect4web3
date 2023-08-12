@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect4 DApp - Game Board</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="gameBoard">
+    <table>
+        <tbody>
+            <!-- Generate rows for the game board -->
+            <!-- Rows are added in reverse because Connect4 fills from the bottom -->
+            <tr id="row5">
+                <td onclick="makeMove(0)"></td>
+                <td onclick="makeMove(1)"></td>
+                <td onclick="makeMove(2)"></td>
+                <td onclick="makeMove(3)"></td>
+                <td onclick="makeMove(4)"></td>
+                <td onclick="makeMove(5)"></td>
+                <td onclick="makeMove(6)"></td>
+            </tr>
+            <tr id="row4">
+                <td onclick="makeMove(0)"></td>
+                <td onclick="makeMove(1)"></td>
+                <td onclick="makeMove(2)"></td>
+                <td onclick="makeMove(3)"></td>
+                <td onclick="makeMove(4)"></td>
+                <td onclick="makeMove(5)"></td>
+                <td onclick="makeMove(6)"></td>
+            </tr>
+            <tr id="row3">
+                <td onclick="makeMove(0)"></td>
+                <td onclick="makeMove(1)"></td>
+                <td onclick="makeMove(2)"></td>
+                <td onclick="makeMove(3)"></td>
+                <td onclick="makeMove(4)"></td>
+                <td onclick="makeMove(5)"></td>
+                <td onclick="makeMove(6)"></td>
+            </tr>
+            <tr id="row2">
+                <td onclick="makeMove(0)"></td>
+                <td onclick="makeMove(1)"></td>
+                <td onclick="makeMove(2)"></td>
+                <td onclick="makeMove(3)"></td>
+                <td onclick="makeMove(4)"></td>
+                <td onclick="makeMove(5)"></td>
+                <td onclick="makeMove(6)"></td>
+            </tr>
+            <tr id="row1">
+                <td onclick="makeMove(0)"></td>
+                <td onclick="makeMove(1)"></td>
+                <td onclick="makeMove(2)"></td>
+                <td onclick="makeMove(3)"></td>
+                <td onclick="makeMove(4)"></td>
+                <td onclick="makeMove(5)"></td>
+                <td onclick="makeMove(6)"></td>
+            </tr>
+            <tr id="row0">
+                <td onclick="makeMove(0)"></td>
+                <td onclick="makeMove(1)"></td>
+                <td onclick="makeMove(2)"></td>
+                <td onclick="makeMove(3)"></td>
+                <td onclick="makeMove(4)"></td>
+                <td onclick="makeMove(5)"></td>
+                <td onclick="makeMove(6)"></td>
+            </tr>				
+        </tbody>
+    </table>
+    <button id="backToLobby">Back to Lobby</button>
+</div>
+
+  <!-- Include Web3.js and app.js -->
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.3.5/dist/web3.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

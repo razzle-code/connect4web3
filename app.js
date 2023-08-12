@@ -46,6 +46,7 @@ async function loadLobby() {
             gamesListElement.appendChild(listItem);
         }
     }
+	
 }
 
 async function hostGame() {
@@ -57,6 +58,9 @@ async function hostGame() {
         });
         alert("Game hosted successfully!");
         loadLobby();
+		// Toggle visibility
+		document.getElementById('lobby').style.display = 'none';
+		document.getElementById('gameBoard').style.display = 'block';
     } else {
         alert("Invalid bet amount!");
     }
@@ -70,7 +74,9 @@ async function joinGame(gameId) {
             value: game.betAmount
         });
         alert("Joined the game successfully!");
-        // Here you can also navigate to the game board to start playing
+        // Toggle visibility
+		document.getElementById('lobby').style.display = 'none';
+		document.getElementById('gameBoard').style.display = 'block';
     } else {
         alert("This game is already full!");
     }

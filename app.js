@@ -59,8 +59,8 @@ async function hostGame() {
         alert("Game hosted successfully!");
         loadLobby();
 		// Toggle visibility
-		document.getElementById('lobby').style.display = 'none';
-		document.getElementById('gameBoard').style.display = 'block';
+        document.getElementById("gameArea").hidden = true;
+        document.getElementById("lobby").hidden = false;
     } else {
         alert("Invalid bet amount!");
     }
@@ -75,8 +75,8 @@ async function joinGame(gameId) {
         });
         alert("Joined the game successfully!");
         // Toggle visibility
-		document.getElementById('lobby').style.display = 'none';
-		document.getElementById('gameBoard').style.display = 'block';
+        document.getElementById("gameArea").hidden = true;
+        document.getElementById("lobby").hidden = false;
     } else {
         alert("This game is already full!");
     }

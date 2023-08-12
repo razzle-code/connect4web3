@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect4 DApp</title>
+    <style>
+        #gameBoard td {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            background-color: white;
+        }
+
+        #gameBoard .player1 {
+            background-color: red;
+        }
+
+        #gameBoard .player2 {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="lobby">
+        <h2>Lobby</h2>
+        <button id="createGame">Create Game</button>
+        <input type="text" id="betAmount" placeholder="Enter bet amount in ETH">
+        <div id="gamesList"></div>
+    </div>
+
+    <div id="gameBoard" style="display: none;">
+        <table>
+            <tbody id="board">
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+        <button onclick="makeMove(0)">Column 1</button>
+        <button onclick="makeMove(1)">Column 2</button>
+        <!-- ... Add buttons for all columns -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.3.5/dist/web3.min.js"></script>
+    <script>
+        // Assuming MetaMask is installed
+        const web3 = new Web3(window.ethereum);
+        let accounts = [];
+        let contract;
+
+        async function init() {
+            accounts = await web3.eth.getAccounts();
+            contract = new web3.eth.Contract(Your_ABI, Your_Contract_Address);
+
+            document.getElementById('createGame').addEventListener('click', createGame);
+        }
+
+        async function createGame() {
+            const betAmount = web3.utils.toWei(document.getElementById('betAmount').value, 'ether');
+            await contract.methods.startGame(accounts[0], accounts[1], betAmount).send({ from: accounts[0], value: 2 * betAmount });
+            // Update the gamesList or navigate to the game board
+        }
+
+        const rows = 6;
+        const columns = 7;
+        let board = [];
+
+        function initBoard() {
+            board = Array(rows).fill().map(() => Array(columns).fill(Player.NONE));
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            for (let i = 0; i < rows; i++) {
+                const rowElement = document.createElement('tr');
+                for (let j = 0; j < columns; j++) {
+                    const cellElement = document.createElement('td');
+                    cellElement.dataset.row = i;
+                    cellElement.dataset.column = j;
+                    rowElement.appendChild(cellElement);
+                }
+                boardElement.appendChild(rowElement);
+            }
+        }
+
+        async function makeMove(column) {
+            // Call the smart contract's makeMove function
+            await contract.methods.makeMove(column).send({ from: accounts[0] });
+        }
+
+        // Listen to the MoveMade event from the contract
+        contract.events.MoveMade({}, (error, event) => {
+            if (error) {
+                console.error(error);
+                return;
+            }
+            const { player, column } = event.returnValues;
+            updateBoard(player, column);
+        });
+
+        function updateBoard(player, column) {
+            // Find the first empty cell in the column
+            for (let i = rows - 1; i >= 0; i--) {
+                if (board[i][column] === Player.NONE) {
+                    board[i][column] = player;
+                    const cell = document.querySelector(`[data-row="${i}"][data-column="${column}"]`);
+                    cell.className = player === Player.PLAYER1 ? 'player1' : 'player2';
+                    break;
+                }
+            }
+        }
+
+        // Initialize the board when the page loads
+        initBoard();
+    </script>
+</body>
+</html>

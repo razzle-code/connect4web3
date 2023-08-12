@@ -26,7 +26,6 @@ let currentGameId = null;
 async function init() {
     accounts = await web3.eth.getAccounts();
     document.getElementById("hostGame").addEventListener("click", hostGame);
-    document.getElementById("backToLobby").addEventListener("click", backToLobby);
     loadLobby();
 }
 

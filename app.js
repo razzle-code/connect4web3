@@ -1,4 +1,21 @@
-const web3 = new Web3(Web3.givenProvider);
+let web3;
+
+// Check for Ethereum browser extension (e.g., MetaMask)
+if (window.ethereum) {
+    web3 = new Web3(window.ethereum);
+    try {
+        // Request account access if needed
+        await window.ethereum.enable();
+    } catch (error) {
+        console.error("User denied account access");
+    }
+} else if (window.web3) {
+    // For legacy dapp browsers
+    web3 = new Web3(window.web3.currentProvider);
+} else {
+    console.error("Ethereum browser not detected. You should consider trying MetaMask!");
+}
+
 const contractAddress = "0x37726917e0e8D60c4262eFbd79220F52203FcD39";
 const connect4Contract = new web3.eth.Contract([{"inputs":[],"name":"createGame","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"games","outputs":[{"internalType":"address","name":"player1","type":"address"},{"internalType":"address","name":"player2","type":"address"},{"internalType":"uint256","name":"betAmount","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"enum Connect4.Player","name":"currentPlayer","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"gamesCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"gameId","type":"uint256"}],"name":"joinGame","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"gameId","type":"uint256"},{"internalType":"uint8","name":"column","type":"uint8"}],"name":"makeMove","outputs":[],"stateMutability":"nonpayable","type":"function"}], contractAddress);
 

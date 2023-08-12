@@ -1,62 +1,67 @@
-// Assuming MetaMask is installed
-const web3 = new Web3(window.ethereum);
-let accounts = [];
-let contract;
+const web3 = new Web3(Web3.givenProvider);
+const contractAddress = "0x37726917e0e8D60c4262eFbd79220F52203FcD39";
+const connect4Contract = new web3.eth.Contract([{"inputs":[],"name":"createGame","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"games","outputs":[{"internalType":"address","name":"player1","type":"address"},{"internalType":"address","name":"player2","type":"address"},{"internalType":"uint256","name":"betAmount","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"enum Connect4.Player","name":"currentPlayer","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"gamesCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"gameId","type":"uint256"}],"name":"joinGame","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"gameId","type":"uint256"},{"internalType":"uint8","name":"column","type":"uint8"}],"name":"makeMove","outputs":[],"stateMutability":"nonpayable","type":"function"}], contractAddress);
 
-const Player = {
-    NONE: 0,
-    PLAYER1: 1,
-    PLAYER2: 2
-};
+let accounts = [];
+let currentGameId = null;
 
 async function init() {
-    // Request account access if needed (for MetaMask)
-    await window.ethereum.enable();
-
     accounts = await web3.eth.getAccounts();
-    contract = new web3.eth.Contract([{"anonymous":false,"inputs":[],"name":"GameDraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"player1","type":"address"},{"indexed":false,"internalType":"address","name":"player2","type":"address"},{"indexed":false,"internalType":"uint256","name":"betAmount","type":"uint256"}],"name":"GameStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"}],"name":"GameWon","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"player","type":"address"},{"indexed":false,"internalType":"uint8","name":"column","type":"uint8"}],"name":"MoveMade","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PrizeClaimed","type":"event"},{"inputs":[],"name":"betAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"board","outputs":[{"internalType":"enum ConnectFour.Player","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentPlayer","outputs":[{"internalType":"enum ConnectFour.Player","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"gameEnded","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"column","type":"uint8"}],"name":"makeMove","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"player1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"player2","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_player1","type":"address"},{"internalType":"address","name":"_player2","type":"address"},{"internalType":"uint256","name":"_betAmount","type":"uint256"}],"name":"startGame","outputs":[],"stateMutability":"payable","type":"function"}]
-, '0xf718e3Ec4c25598E3946cb0F634d7aA017f38BeB');
-
-    // Now, you can safely access contract events
-    contract.events.MoveMade({}, (error, event) => {
-        if (error) {
-            console.error(error);
-            return;
-        }
-        const { player, column } = event.returnValues;
-        updateBoard(player, column);
-    });
-
-    document.getElementById('createGame').addEventListener('click', createGame);
+    document.getElementById("hostGame").addEventListener("click", hostGame);
+    document.getElementById("backToLobby").addEventListener("click", backToLobby);
+    loadLobby();
 }
 
-const rows = 6;
-const columns = 7;
-let board = [];
+async function loadLobby() {
+    // Fetch list of games from the contract
+    const gamesCount = await connect4Contract.methods.gamesCount().call();
+    const gamesListElement = document.getElementById("gamesList");
+    gamesListElement.innerHTML = ''; // Clear the list
 
-function initBoard() {
-    board = Array(rows).fill().map(() => Array(columns).fill(Player.NONE));
-    const boardElement = document.getElementById('board');
-    boardElement.innerHTML = '';
-    for (let i = 0; i < rows; i++) {
-        const rowElement = document.createElement('tr');
-        for (let j = 0; j < columns; j++) {
-            const cellElement = document.createElement('td');
-            cellElement.dataset.row = i;
-            cellElement.dataset.column = j;
-            rowElement.appendChild(cellElement);
+    for (let i = 1; i <= gamesCount; i++) {
+        const game = await connect4Contract.methods.games(i).call();
+        
+        // Only show games that are still active and waiting for a second player
+        if (game.isActive && game.player2 === '0x0000000000000000000000000000000000000000') {
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `Game #${i} hosted by ${game.player1} with bet of ${web3.utils.fromWei(game.betAmount, 'ether')} ETH. <button onclick="joinGame(${i})">Join</button>`;
+            gamesListElement.appendChild(listItem);
         }
-        boardElement.appendChild(rowElement);
     }
 }
 
-async function makeMove(column) {
-    // Call the smart contract's makeMove function
-    await contract.methods.makeMove(column).send({ from: accounts[0] });
+async function hostGame() {
+    const betAmount = prompt("Enter the amount of ETH you want to bet:", "0.1");
+    if (betAmount && parseFloat(betAmount) > 0) {
+        await connect4Contract.methods.createGame().send({
+            from: accounts[0],
+            value: web3.utils.toWei(betAmount, 'ether')
+        });
+        alert("Game hosted successfully!");
+        loadLobby();
+    } else {
+        alert("Invalid bet amount!");
+    }
 }
 
-// Initialize the board when the page loads
-initBoard();
+async function joinGame(gameId) {
+    const game = await connect4Contract.methods.games(gameId).call();
+    if (game.player2 === '0x0000000000000000000000000000000000000000') {
+        await connect4Contract.methods.joinGame(gameId).send({
+            from: accounts[0],
+            value: game.betAmount
+        });
+        alert("Joined the game successfully!");
+        // Here you can also navigate to the game board to start playing
+    } else {
+        alert("This game is already full!");
+    }
+}
 
-// Call the init function when the page loads
-window.onload = init;
+function backToLobby() {
+    document.getElementById("gameArea").hidden = true;
+    document.getElementById("lobby").hidden = false;
+    loadLobby();
+}
+
+init();

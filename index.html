@@ -15,12 +15,71 @@
         <ul id="gamesList"></ul>
     </div>
 
-    <div id="gameArea" hidden>
-        <h2>Connect4 Game</h2>
-        <div id="board"></div>
-        <button id="backToLobby">Back to Lobby</button>
-    </div>
 
+	<div id="gameBoard" hidden>
+		<table>
+			<tbody>
+				<!-- Generate rows for the game board -->
+				<!-- Rows are added in reverse because Connect4 fills from the bottom -->
+				<tr id="row5">
+					<td onclick="makeMove(0)"></td>
+					<td onclick="makeMove(1)"></td>
+					<td onclick="makeMove(2)"></td>
+					<td onclick="makeMove(3)"></td>
+					<td onclick="makeMove(4)"></td>
+					<td onclick="makeMove(5)"></td>
+					<td onclick="makeMove(6)"></td>
+				</tr>
+				<tr id="row4">
+					<td onclick="makeMove(0)"></td>
+					<td onclick="makeMove(1)"></td>
+					<td onclick="makeMove(2)"></td>
+					<td onclick="makeMove(3)"></td>
+					<td onclick="makeMove(4)"></td>
+					<td onclick="makeMove(5)"></td>
+					<td onclick="makeMove(6)"></td>
+				</tr>
+				<tr id="row3">
+					<td onclick="makeMove(0)"></td>
+					<td onclick="makeMove(1)"></td>
+					<td onclick="makeMove(2)"></td>
+					<td onclick="makeMove(3)"></td>
+					<td onclick="makeMove(4)"></td>
+					<td onclick="makeMove(5)"></td>
+					<td onclick="makeMove(6)"></td>
+				</tr>
+				<tr id="row2">
+					<td onclick="makeMove(0)"></td>
+					<td onclick="makeMove(1)"></td>
+					<td onclick="makeMove(2)"></td>
+					<td onclick="makeMove(3)"></td>
+					<td onclick="makeMove(4)"></td>
+					<td onclick="makeMove(5)"></td>
+					<td onclick="makeMove(6)"></td>
+				</tr>
+				<tr id="row1">
+					<td onclick="makeMove(0)"></td>
+					<td onclick="makeMove(1)"></td>
+					<td onclick="makeMove(2)"></td>
+					<td onclick="makeMove(3)"></td>
+					<td onclick="makeMove(4)"></td>
+					<td onclick="makeMove(5)"></td>
+					<td onclick="makeMove(6)"></td>
+				</tr>
+				<tr id="row0">
+					<td onclick="makeMove(0)"></td>
+					<td onclick="makeMove(1)"></td>
+					<td onclick="makeMove(2)"></td>
+					<td onclick="makeMove(3)"></td>
+					<td onclick="makeMove(4)"></td>
+					<td onclick="makeMove(5)"></td>
+					<td onclick="makeMove(6)"></td>
+				</tr>				
+			</tbody>
+		</table>
+		<button id="backToLobby">Back to Lobby</button>
+	</div>
+	
     
 </body>
 </html>
